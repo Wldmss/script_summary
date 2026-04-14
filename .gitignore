@@ -1,13 +1,13 @@
 *.whl
 *.gguf
 
-/*/libs/
+/*/*libs/
 
 /venv/
 /wheel/
 
-*.zip
-*.tar.gz
+# *.zip
+# *.tar.gz
 
 /mount/scripts_old/
 /mount/scripts/

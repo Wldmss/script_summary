@@ -1,14 +1,14 @@
 source venv/bin/activate
 
-
 python 3.9.15
 centos linux 7 rhel fedora
 mount 맞추기
 
 /data/mount_docker:/mount/Root
 
-
 ---
+
+# macOS 에서 docker 테스트 환경 만들기
 
 # Docker 설치
 
@@ -17,14 +17,19 @@ mount 맞추기
 ```
 
 # Docker 실행
+
 docker run -itd \
-  --platform linux/amd64 \
-  -v /Users/sqi/ktgenius/git/python/mount:/app \
-  --name ai \
-  centos7-py39 \
-  /bin/bash
+ --platform linux/amd64 \
+ -v /Users/sqi/ktgenius/git/python/mount:/app \
+ --name ai \
+ centos7-py39 \
+ /bin/bash
+
+- ai-test : 패키징용
+- ai : 테스트용
 
 # 라이브러리 설치
+
 ```
 cd /app
 
@@ -35,8 +40,8 @@ pip3 install --no-index --find-links=./libs ./llama_cpp_python-0.2.90-cp39-cp39-
 python3 -c 'from llama_cpp import Llama; print("성공! 완벽합니다!")'
 ```
 
-
 # 라이브러리의 의존성 라이브러리 다운로드 (테스트)
+
 ```
 pip3 download -d /app/libs ./llama-cpp-python-0.2.90.tar.gz
 
@@ -44,10 +49,11 @@ pip3 download -d /app/libs "scikit-build-core[pyproject]" cmake ninja
 ```
 
 # 라이브러리 설치 (테스트)
+
 ```
 pip3 install --no-index --find-links=/app/libs llama-cpp-python-0.2.90.tar.gz
 
--- gcc 9+ 버전으로 설치가 필요해 위에 명령어로는 안됨.
+-- gcc 9+ 버전으로 설치가 필요해 위에 명령어로는 안됨. -> C++ 컴파일이 필요해서 gcc 가 필요함
 ```
 
 # gcc 9+ whl 만들기
@@ -106,4 +112,23 @@ pip3 install --no-index --find-links=/app/libs llama-cpp-python-0.2.90.tar.gz
 
         find /usr -name libggml.so
         export LD_LIBRARY_PATH=/usr/local/lib/python3.9/site-packages/llama_cpp:$LD_LIBRARY_PATH
+```
+
+# requests 설치 파일 만들기
+
+```
+# mkdir -p /app/requests_libs
+
+# requests와 함께, OpenSSL 1.0.2와 호환되는 urllib3 1.26.x 버전을 강제로 다운로드합니다.
+pip3 download -d /app/requests_libs/ "requests" "urllib3<2.0"
+
+# tar -cvzf requests.tar.gz /app/requests_libs  # 압축하는 경우
+```
+
+## requests 설치
+
+```
+# pip3 install --no-index --find-links=./requests_libs requests
+
+# python3 -c "import requests; print('Requests 버전:', requests.__version__); print('성공: 라이브러리를 정상적으로 불러왔습니다')"
 ```
