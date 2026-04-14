@@ -132,3 +132,9 @@ pip3 download -d /app/requests_libs/ "requests" "urllib3<2.0"
 
 # python3 -c "import requests; print('Requests 버전:', requests.__version__); print('성공: 라이브러리를 정상적으로 불러왔습니다')"
 ```
+
+# github 100MB 업로드 안되는 경우
+
+```
+git config --global http.postBuffer 524288000
+```

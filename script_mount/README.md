@@ -25,5 +25,3 @@ python3 -c 'from llama_cpp import Llama; print("성공! 완벽합니다!")'
 ```
 # pip3 install --no-index --find-links=./requests_libs requests
 ```
-
-# 커밋하고 내부 반입 시도
