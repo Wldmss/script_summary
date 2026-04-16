@@ -20,8 +20,8 @@ mount 맞추기
 
 docker run -itd \
  --platform linux/amd64 \
- -v /Users/sqi/ktgenius/git/python/mount:/app \
- --name ai \
+ -v /Users/sqi/ktgenius/git/script_summary/mount:/app \
+ --name ai-python \
  centos7-py39 \
  /bin/bash
 

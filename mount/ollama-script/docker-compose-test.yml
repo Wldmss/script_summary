@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  ollama-test:
+    image: ollama-eeve:v1
+    container_name: ollama-server
+    # 새로 만든 네트워크를 사용하도록 설정
+    networks:
+      - ai-network
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_KEEP_ALIVE=-1
+
+networks:
+  ai-network:
+    external: true # 이미 밖에서 만든 네트워크를 사용하겠다는 뜻

@@ -7,7 +7,8 @@
 /wheel/
 
 # *.zip
-# *.tar.gz
+*.tar.gz
+*.tar
 
 /mount/scripts_old/
 /mount/scripts/
