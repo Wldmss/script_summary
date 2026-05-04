@@ -79,6 +79,7 @@ def call_ollama(system_msg, user_msg, mode):
             "temperature": 0.0,    # 최대로 낮춰서 변동성 제거
             "num_ctx": MAX_CONTEXT,
             "repeat_penalty": 1.2,
+            "presence_penalty": 0.5, # 새로운 주제(줄바꿈)로 넘어갈 확률을 높임
             "stop": ["###", "User:", "Assistant:"]
         }
     }
@@ -96,17 +97,24 @@ def call_ollama(system_msg, user_msg, mode):
 def summarize_chunk(text, mode='part'):
     """강의 성격에 맞는 요약 로직"""
     if mode == 'part':
-        system_msg = "너는 교육 콘텐츠의 핵심 내용을 정리하는 전문 조교야."
+        system_msg = "너는 복잡한 내용을 단문 위주의 리스트로 변환하는 요약 전문가야. 무조건 한 줄에 한 포인트만 작성해."
         user_msg = textwrap.dedent(f"""
-            다음 강의 스크립트 내용을 읽고, 학습자가 반드시 알아야 할 **지식 포인트**를 정리해줘.
-            
             [지시사항]
-            - 중요 개념과 키워드 위주로 정리할 것.
-            - 문장은 '~함', '~임' 형태의 개조식으로 작성할 것.
-            - 사족은 빼고 핵심 정보만 추출할 것.
+            - 스크립트의 핵심 내용을 반드시 아래 [출력 형식]과 같이 한 줄씩 나누어 작성할 것.
+            - 문단으로 뭉치지 말고, 각 포인트마다 줄바꿈을 할 것.
+            - 문장 끝은 '~함', '~임'으로 짧게 끝낼 것.
+            - 불필요한 서론(요약하자면 등)은 절대 금지.
+
+            [출력 형식 예시]
+            - 첫 번째 핵심 내용 포인트임
+            - 두 번째 중요한 지식 포인트임
+            - 세 번째 실습 관련 주의사항임
 
             [스크립트]
             {text}
+            
+            [결과]
+            - 
         """).strip()
 
     elif mode == 'final':
