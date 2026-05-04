@@ -61,30 +61,37 @@ def split_text(text, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP):
         if start < 0: start = 0
     
     return chunks
-def call_ollama(system_msg, user_msg):
-    """Ollama API를 호출하여 강의 소개글을 생성합니다."""
-    # EEVE 모델에 최적화된 프롬프트 구조
-    full_prompt = f"### System:\n{system_msg}\n\n### User:\n{user_msg}\n\n### Assistant:\n"
+
+def call_ollama(system_msg, user_msg, mode):
+    # Assistant가 답변을 시작할 형식을 미리 던져줍니다.
+    if mode in ['final', 'single']:
+        force_start = "1. **한 줄 요약:**"
+        full_prompt = f"### System:\n{system_msg}\n\n### User:\n{user_msg}\n\n### Assistant:\n{force_start}"
+    else:
+        force_start = ""
+        full_prompt = f"### System:\n{system_msg}\n\n### User:\n{user_msg}\n\n### Assistant:\n"
     
     payload = {
         "model": MODEL_NAME,
         "prompt": full_prompt,
         "stream": False,
         "options": {
-            "temperature": 0.3, # 창의적인 문구 생성을 위해 약간 올림
-            "top_p": 0.9,
+            "temperature": 0.0,    # 최대로 낮춰서 변동성 제거
             "num_ctx": MAX_CONTEXT,
-            "repeat_penalty": 1.1
+            "repeat_penalty": 1.2,
+            "stop": ["###", "User:", "Assistant:"]
         }
     }
 
     try:
         response = requests.post(OLLAMA_API_URL, json=payload, timeout=600)
         response.raise_for_status()
-        return response.json()['response'].strip()
+        result = response.json()['response'].strip()
+        # 강제 시작 문구가 잘렸을 경우를 대비해 다시 붙여줍니다.
+        return f"{force_start} {result}" if force_start else result
     except Exception as e:
         print(f"Ollama 호출 오류: {e}")
-        return "요약 생성 중 오류가 발생했습니다. 메모리 설정을 확인하세요."
+        return "오류 발생"
 
 def summarize_chunk(text, mode='part'):
     """강의 성격에 맞는 요약 로직"""
@@ -130,7 +137,7 @@ def summarize_chunk(text, mode='part'):
             {text}
         """
 
-    return call_ollama(system_msg, user_msg)
+    return call_ollama(system_msg, user_msg, mode)
 
 def main():
     print(f"[{datetime.now().time()}] 스케줄링 확인: Whisper 등 이전 프로세스 종료 대기...")
